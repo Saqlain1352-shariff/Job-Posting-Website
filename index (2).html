@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Projkeez Group — Internship 2025</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f9f7f2;
+    --accent: #7B2FBE;
+    --accent-light: #ede0ff;
+    --accent-dark: #5a1f8f;
+    --muted: #8a8578;
+    --border: rgba(13,13,13,0.12);
+    --card-bg: #ffffff;
+    --gradient-1: #7B2FBE;
+    --gradient-2: #9d4edd;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* Custom cursor */
+  #cursor {
+    position: fixed;
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, background 0.2s, border-color 0.2s;
+  }
+  #cursor.hovered {
+    width: 36px; height: 36px;
+    background: rgba(123,47,190,0.12);
+    border-color: var(--accent);
+  }
+  #cursor-dot {
+    position: fixed;
+    width: 4px; height: 4px;
+    background: var(--ink);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+  }
+  @media (pointer: coarse) {
+    #cursor, #cursor-dot { display: none; }
+  }
+
+  /* Background canvas */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.35;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(249,247,242,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transition: padding 0.3s;
+  }
+  .nav.scrolled { padding: 1rem 3rem; }
+  .nav-logo {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-cta {
+    background: var(--accent);
+    color: white !important;
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-weight: 600 !important;
+  }
+  .mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .mobile-menu-btn span {
+    width: 24px;
+    height: 2px;
+    background: var(--ink);
+    transition: 0.3s;
+  }
+
+  /* Main container */
+  .page {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Sections */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ─── HERO ─── */
+  .hero-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 8rem;
+    position: relative;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    padding: 8px 18px;
+    margin-bottom: 2rem;
+    width: fit-content;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .hero-headline {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--accent);
+    display: block;
+  }
+  .hero-sub {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    color: var(--muted);
+    max-width: 600px;
+    margin-bottom: 3rem;
+    font-weight: 400;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 4rem;
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat-item h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-item p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 0.5rem;
+  }
+  .hero-illustration {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45%;
+    max-width: 600px;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  /* ─── ABOUT ─── */
+  .about-section {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 30px;
+    margin: 0 2rem;
+    max-width: calc(100% - 4rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .about-section::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(123,47,190,0.3) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .about-tag {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 1.5rem;
+  }
+  .about-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+  .about-title em {
+    font-style: italic;
+    color: #c084fc;
+  }
+  .about-text {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  .about-quote {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    color: white;
+    border-left: 3px solid var(--accent);
+    padding-left: 1.5rem;
+    margin-top: 2rem;
+  }
+  .about-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .about-feature {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .about-feature-icon {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+  .about-feature h4 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .about-feature p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ─── WHY JOIN ─── */
+  .why-section {
+    text-align: center;
+  }
+  .section-header {
+    max-width: 700px;
+    margin: 0 auto 4rem;
+    text-align: center;
+  }
+  .section-tag {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .section-subtitle {
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .benefit-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: left;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  }
+  .benefit-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+  .benefit-card:hover::before { transform: scaleX(1); }
+  .benefit-icon {
+    width: 56px; height: 56px;
+    background: var(--accent-light);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+  .benefit-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .benefit-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ─── DETAILS ─── */
+  .details-section {
+    background: linear-gradient(135deg, #f5f0ff 0%, var(--paper) 100%);
+    border-radius: 30px;
+    margin: 0 2rem;
+    max-width: calc(100% - 4rem);
+  }
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+  .detail-box {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .detail-box-icon {
+    width: 48px; height: 48px;
+    background: var(--accent-light);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+  }
+  .detail-box-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .detail-box-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* ─── ROLES ─── */
+  .roles-section { padding-bottom: 4rem; }
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+  .role-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .role-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(123,47,190,0.1);
+  }
+  .role-card.featured {
+    border: 2px solid var(--accent);
+    background: linear-gradient(135deg, white 0%, var(--accent-light) 100%);
+  }
+  .role-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+  }
+  .role-badge.remote {
+    background: #e0f2fe;
+    color: #0369a1;
+  }
+  .role-badge.field {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .role-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+  .role-desc {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .role-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 1.5rem 0 0.75rem;
+  }
+  .role-tasks {
+    list-style: none;
+  }
+  .role-tasks li {
+    padding-left: 1.5rem;
+    position: relative;
+    font-size: 14px;
+    margin-bottom: 0.5rem;
+    color: var(--ink);
+  }
+  .role-tasks li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .role-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .role-tool {
+    font-size: 12px;
+    background: var(--paper);
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+  }
+  .role-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: gap 0.2s;
+  }
+  .role-cta:hover { gap: 12px; }
+
+  /* ─── WHO SHOULD APPLY ─── */
+  .who-section {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 30px;
+    margin: 0 2rem;
+    max-width: calc(100% - 4rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .who-section::after {
+    content: '';
+    position: absolute;
+    bottom: -300px; left: -300px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(123,47,190,0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .who-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .who-list {
+    list-style: none;
+    margin-top: 2rem;
+  }
+  .who-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+  }
+  .who-list li::before {
+    content: '✓';
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .who-visual {
+    background: rgba(255,255,255,0.05);
+    border-radius: 24px;
+    padding: 3rem;
+    text-align: center;
+  }
+  .who-visual-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+  }
+  .who-visual-text {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+  }
+
+  /* ─── DIFFERENTIATORS ─── */
+  .diff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .diff-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .diff-check {
+    width: 48px; height: 48px;
+    background: #dcfce7;
+    color: #166534;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 1rem;
+  }
+  .diff-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  .diff-card p {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* ─── APPLY CTA ─── */
+  .apply-section {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: white;
+    border-radius: 30px;
+    margin: 0 2rem 4rem;
+    max-width: calc(100% - 4rem);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .apply-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+  }
+  .apply-content {
+    position: relative;
+    z-index: 1;
+  }
+  .apply-section h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: 1rem;
+  }
+  .apply-section p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+  .apply-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+  .apply-btn-primary {
+    background: white;
+    color: var(--accent);
+    padding: 16px 40px;
+    border-radius: 100px;
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .apply-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  .apply-btn-secondary {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    padding: 16px 40px;
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    transition: all 0.2s;
+  }
+  .apply-btn-secondary:hover {
+    background: rgba(255,255,255,0.25);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.2);
+  }
+  .contact-item {
+    text-align: center;
+  }
+  .contact-item-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+  }
+  .contact-item-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .contact-item-value a {
+    color: white;
+    text-decoration: none;
+  }
+  .contact-item-value a:hover { text-decoration: underline; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .footer-links a {
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .about-grid, .who-grid { grid-template-columns: 1fr; }
+    .details-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-illustration { display: none; }
+  }
+
+  @media (max-width: 768px) {
+    .nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .mobile-menu-btn { display: flex; }
+    section { padding: 4rem 1.5rem; }
+    .hero-stats { flex-direction: column; gap: 2rem; }
+    .about-features { grid-template-columns: 1fr; }
+    .roles-grid { grid-template-columns: 1fr; }
+    .details-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .apply-buttons { flex-direction: column; align-items: center; }
+    .about-section, .details-section, .who-section, .apply-section {
+      margin: 0 1rem;
+      max-width: calc(100% - 2rem);
+      border-radius: 20px;
+    }
+  }
+
+  /* Animations */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- Background canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Navigation -->
+<nav class="nav">
+  <div class="nav-logo">Projkeez Group</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#why">Why Join</a></li>
+    <li><a href="#roles">Roles</a></li>
+    <li><a href="#apply" class="nav-cta">Apply Now</a></li>
+  </ul>
+  <button class="mobile-menu-btn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page">
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="home">
+    <div class="hero-badge">Internship Opportunity 2025</div>
+    <h1 class="hero-headline">Building Innovation<br><em>Beyond Boundaries.</em></h1>
+    <p class="hero-sub">Real projects. Real mentorship. 3 months that actually matter. Join Projkeez Group and work on live applications that impact real users — not dummy exercises.</p>
+    <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="apply-btn-primary" style="width: fit-content;">
+      Apply Now
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </a>
+    
+    <div class="hero-stats">
+      <div class="stat-item">
+        <h3>3 Months</h3>
+        <p>Intensive Program</p>
+      </div>
+      <div class="stat-item">
+        <h3>2-3 hrs/day</h3>
+        <p>Flexible Schedule</p>
+      </div>
+      <div class="stat-item">
+        <h3>8+ Roles</h3>
+        <p>Open Positions</p>
+      </div>
+      <div class="stat-item">
+        <h3>100%</h3>
+        <p>Remote Available</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section" id="about">
+    <div class="about-grid">
+      <div>
+        <div class="about-tag">About Us</div>
+        <h2 class="about-title">We're not your<br><em>typical company.</em></h2>
+        <p class="about-text">Projkeez Group Pvt Ltd is a fast-growing startup on a mission to solve real-world problems through technology, creativity, and bold thinking. We build impactful applications, explore cutting-edge tech, and — most importantly — we build people.</p>
+        <p class="about-text">At Projkeez, you won't be fetching coffee or sitting through pointless meetings. You'll be rolling up your sleeves, diving into live projects, and contributing to things that actually matter.</p>
+        <div class="about-quote">"We don't just build products. We build futures."</div>
+      </div>
+      <div class="about-features">
+        <div class="about-feature">
+          <div class="about-feature-icon">🚀</div>
+          <h4>Startup Culture</h4>
+          <p>Fast decisions, open communication, zero red tape</p>
+        </div>
+        <div class="about-feature">
+          <div class="about-feature-icon">💡</div>
+          <h4>Freedom to Create</h4>
+          <p>Bring your ideas. We listen. Best ideas come from everywhere.</p>
+        </div>
+        <div class="about-feature">
+          <div class="about-feature-icon">🤝</div>
+          <h4>Real Mentorship</h4>
+          <p>Learn from industry practitioners who've been in the trenches</p>
+        </div>
+        <div class="about-feature">
+          <div class="about-feature-icon">📈</div>
+          <h4>Live Projects</h4>
+          <p>Work on products used by real people, not sandbox exercises</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Join Section -->
+  <section class="why-section" id="why">
+    <div class="section-header">
+      <div class="section-tag">The Experience</div>
+      <h2 class="section-title">Why Join Projkeez?</h2>
+      <p class="section-subtitle">Let's be honest — most internships leave you underwhelmed. You join expecting to learn, and end up doing nothing meaningful. At Projkeez, we designed this program to be different.</p>
+    </div>
+    
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">🛠️</div>
+        <h3>Real Projects</h3>
+        <p>Work on live, real-world applications — not dummy exercises. Every contribution you make is counted and deployed.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🎯</div>
+        <h3>Expert Mentorship</h3>
+        <p>Learn directly from industry practitioners who've been in the trenches and actually know their stuff.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📁</div>
+        <h3>Portfolio Building</h3>
+        <p>Walk away with real work you can show employers. Not just a certificate — actual proof of your skills.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📜</div>
+        <h3>Letter of Recommendation</h3>
+        <p>Top performers receive strong, personalized LORs from our leadership team to boost your career.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🌱</div>
+        <h3>Startup Culture</h3>
+        <p>Fast decisions, open communication, zero red tape. Experience what it's like inside a real startup.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🔓</div>
+        <h3>Freedom to Create</h3>
+        <p>Bring your ideas. We listen. The best ideas here come from our interns, not just our founders.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Program Details -->
+  <section class="details-section">
+    <div class="section-header">
+      <div class="section-tag">Program Details</div>
+      <h2 class="section-title">The Essentials</h2>
+      <p class="section-subtitle">Everything you need to know about the internship structure</p>
+    </div>
+    
+    <div class="details-grid">
+      <div class="detail-box">
+        <div class="detail-box-icon">📅</div>
+        <div class="detail-box-label">Duration</div>
+        <div class="detail-box-value">3 Months<br><small style="color: var(--muted); font-weight: 400;">Extension possible for top performers</small></div>
+      </div>
+      <div class="detail-box">
+        <div class="detail-box-icon">🌍</div>
+        <div class="detail-box-label">Mode</div>
+        <div class="detail-box-value">Remote<br><small style="color: var(--muted); font-weight: 400;">Field work in Bangalore (BA role)</small></div>
+      </div>
+      <div class="detail-box">
+        <div class="detail-box-icon">⏰</div>
+        <div class="detail-box-label">Hours</div>
+        <div class="detail-box-value">2-3 hrs/day<br><small style="color: var(--muted); font-weight: 400;">Flexible, fits college schedule</small></div>
+      </div>
+      <div class="detail-box">
+        <div class="detail-box-icon">🎁</div>
+        <div class="detail-box-label">Stipend</div>
+        <div class="detail-box-value">Unpaid<br><small style="color: var(--muted); font-weight: 400;">LOR + Certificate + Portfolio</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roles Section -->
+  <section class="roles-section" id="roles">
+    <div class="section-header">
+      <div class="section-tag">Open Positions</div>
+      <h2 class="section-title">Choose Your Lane.<br>Own Your Growth.</h2>
+      <p class="section-subtitle">8 specialized tracks designed for different skill sets and ambitions</p>
+    </div>
+    
+    <div class="roles-grid">
+      <!-- Data Analyst -->
+      <div class="role-card">
+        <span class="role-badge remote">📍 Remote</span>
+        <h3 class="role-title">Data Analyst Intern</h3>
+        <p class="role-desc">Transform raw data into strategic business value. You'll be the person who turns noise into insight.</p>
+        
+        <div class="role-section-title">What You'll Do</div>
+        <ul class="role-tasks">
+          <li>Collect, clean, and analyze datasets for actionable insights</li>
+          <li>Build dashboards and visual reports that tell compelling stories</li>
+          <li>Support product teams with data-driven decision-making</li>
+          <li>Identify trends, patterns, and anomalies in complex datasets</li>
+        </ul>
+        
+        <div class="role-tools">
+          <span class="role-tool">Python</span>
+          <span class="role-tool">Excel</span>
+          <span class="role-tool">SQL</span>
+          <span class="role-tool">Power BI</span>
+          <span class="role-tool">Tableau</span>
+        </div>
+        
+        <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="role-cta">Apply for this role →</a>
+      </div>
+
+      <!-- Business Analyst -->
+      <div class="role-card featured">
+        <span class="role-badge field">📍 Bangalore Field</span>
+        <h3 class="role-title">Business Analyst Intern</h3>
+        <p class="role-desc">Get out of the classroom and into the field. Meet real clients, solve real problems, build real confidence.</p>
+        
+        <div class="role-section-title">What You'll Do</div>
+        <ul class="role-tasks">
+          <li>Conduct market research and competitor analysis</li>
+          <li>Interact with clients and stakeholders to gather requirements</li>
+          <li>Map business processes and identify efficiency opportunities</li>
+          <li>Prepare reports and presentations for leadership</li>
+        </ul>
+        
+        <div class="role-tools">
+          <span class="role-tool">Excel</span>
+          <span class="role-tool">MS Office</span>
+          <span class="role-tool">Notion</span>
+          <span class="role-tool">Business Canvas</span>
+        </div>
+        
+        <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="role-cta">Apply for this role →</a>
+      </div>
+
+      <!-- AI Intern -->
+      <div class="role-card">
+        <span class="role-badge remote">📍 Remote</span>
+        <h3 class="role-title">AI Intern — Content/Video/Artist</h3>
+        <p class="role-desc">Sit at the intersection of art and technology. Be ahead of 95% of the creative world by mastering AI tools.</p>
+        
+        <div class="role-section-title">What You'll Do</div>
+        <ul class="role-tasks">
+          <li>Create AI-generated content, visuals, and multimedia assets</li>
+          <li>Explore cutting-edge AI creative tools and workflows</li>
+          <li>Develop scripts, captions, and storyboards for campaigns</li>
+          <li>Research emerging AI content trends and techniques</li>
+        </ul>
+        
+        <div class="role-tools">
+          <span class="role-tool">Midjourney</span>
+          <span class="role-tool">RunwayML</span>
+          <span class="role-tool">ChatGPT</span>
+          <span class="role-tool">Adobe Firefly</span>
+          <span class="role-tool">CapCut</span>
+        </div>
+        
+        <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="role-cta">Apply for this role →</a>
+      </div>
+
+      <!-- Graphic Designer -->
+      <div class="role-card">
+        <span class="role-badge remote">📍 Remote</span>
+        <h3 class="role-title">Graphic Designer Intern</h3>
+        <p class="role-desc">Design for live products and campaigns. Your work will be seen by real users, not just added to a practice folder.</p>
+        
+        <div class="role-section-title">What You'll Do</div>
+        <ul class="role-tasks">
+          <li>Design social media creatives and branding assets</li>
+          <li>Collaborate on visual identity with marketing teams</li>
+          <li>Create illustrations, infographics, and UI mockups</li>
+          <li>Maintain visual consistency across brand touchpoints</li>
+        </ul>
+        
+        <div class="role-tools">
+          <span class="role-tool">Figma</span>
+          <span class="role-tool">Illustrator</span>
+          <span class="role-tool">Photoshop</span>
+          <span class="role-tool">Canva</span>
+          <span class="role-tool">CorelDRAW</span>
+        </div>
+        
+        <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="role-cta">Apply for this role →</a>
+      </div>
+
+      <!-- Motion Graphics -->
+      <div class="role-card">
+        <span class="role-badge remote">📍 Remote</span>
+        <h3 class="role-title">Motion Graphics Intern</h3>
+        <p class="role-desc">Motion is the future of content. Brands are desperate for people who can bring visuals to life.</p>
+        
+        <div class="role-section-title">What You'll Do</div>
+        <ul class="role-tasks">
+          <li>Create animated explainer videos and promotional content</li>
+          <li>Design motion sequences for product demos</li>
+          <li>Edit and enhance video content for digital platforms</li>
+          <li>Build a standout video portfolio that clients love</li>
+        </ul>
+        
+        <div class="role-tools">
+          <span class="role-tool">After Effects</span>
+          <span class="role-tool">Premiere Pro</span>
+          <span class="role-tool">Blender</span>
+          <span class="role-tool">DaVinci Resolve</span>
+        </div>
+        
+        <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="role-cta">Apply for this role →</a>
+      </div>
+
+      <!-- WordPress Developer -->
+      <div class="role-card">
+        <span class="role-badge remote">📍 Remote</span>
+        <h3 class="role-title">WordPress Developer Intern</h3>
+        <p class="role-desc">WordPress powers 40% of the internet. Master it and create real income on the side — even as a student.</p>
+        
+        <div class="role-section-title">What You'll Do</div>
+        <ul class="role-tasks">
+          <li>Build and customize WordPress websites for clients</li>
+          <li>Develop plugins, themes, and custom features</li>
+          <li>Optimize for speed, SEO, and mobile responsiveness</li>
+          <li>Troubleshoot and maintain existing web properties</li>
+        </ul>
+        
+        <div class="role-tools">
+          <span class="role-tool">WordPress</span>
+          <span class="role-tool">Elementor</span>
+          <span class="role-tool">PHP</span>
+          <span class="role-tool">HTML/CSS</span>
+          <span class="role-tool">MySQL</span>
+        </div>
+        
+        <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="role-cta">Apply for this role →</a>
+      </div>
+
+      <!-- Investor Relations -->
+      <div class="role-card">
+        <span class="role-badge remote">📍 Remote</span>
+        <h3 class="role-title">Investor Relations & Analyst</h3>
+        <p class="role-desc">A front-row seat to the startup fundraising world. Most people only learn this after years — you'll start from day one.</p>
+        
+        <div class="role-section-title">What You'll Do</div>
+        <ul class="role-tasks">
+          <li>Research potential investors, VCs, and funding opportunities</li>
+          <li>Prepare pitch decks and financial summaries</li>
+          <li>Track market trends and startup ecosystem developments</li>
+          <li>Draft investor communications and proposals</li>
+        </ul>
+        
+        <div class="role-tools">
+          <span class="role-tool">Excel</span>
+          <span class="role-tool">PowerPoint</span>
+          <span class="role-tool">CrunchBase</span>
+          <span class="role-tool">LinkedIn</span>
+        </div>
+        
+        <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="role-cta">Apply for this role →</a>
+      </div>
+
+      <!-- Full Stack Developer -->
+      <div class="role-card featured">
+        <span class="role-badge remote">📍 Remote</span>
+        <h3 class="role-title">Full Stack Developer Intern</h3>
+        <p class="role-desc">This is not a tutorial. This is the real thing. Push to production, deal with real bugs, grow faster than ever.</p>
+        
+        <div class="role-section-title">What You'll Do</div>
+        <ul class="role-tasks">
+          <li>Build frontend and backend features for live applications</li>
+          <li>Implement pixel-perfect, responsive UIs</li>
+          <li>Write clean, well-documented, scalable code</li>
+          <li>Participate in code reviews and agile sprints</li>
+        </ul>
+        
+        <div class="role-tools">
+          <span class="role-tool">React.js</span>
+          <span class="role-tool">Node.js</span>
+          <span class="role-tool">MongoDB</span>
+          <span class="role-tool">Express</span>
+          <span class="role-tool">Firebase</span>
+        </div>
+        
+        <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="role-cta">Apply for this role →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who Should Apply -->
+  <section class="who-section">
+    <div class="who-grid">
+      <div>
+        <div class="about-tag">Who We're Looking For</div>
+        <h2 class="about-title">Not perfect grades.<br><em>The right mindset.</em></h2>
+        <p class="about-text">We're looking for hungry learners who are bored of passive learning and want to actually do things. If you read this and thought "this is for me" — it probably is.</p>
+        
+        <ul class="who-list">
+          <li>Students from any branch, background, or year</li>
+          <li>Fresh graduates seeking real experience</li>
+          <li>Self-taught learners who have built something</li>
+          <li>People who can manage time and work independently</li>
+          <li>Those ready to roll up sleeves and contribute</li>
+        </ul>
+      </div>
+      <div class="who-visual">
+        <div class="who-visual-icon">🎯</div>
+        <div class="who-visual-text">"If you bring passion,<br>we'll give you the platform."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What Makes Us Different -->
+  <section class="why-section">
+    <div class="section-header">
+      <div class="section-tag">The Difference</div>
+      <h2 class="section-title">What Makes This Different?</h2>
+      <p class="section-subtitle">We know what you're thinking: "Another internship with empty promises." Here's why Projkeez is genuinely different.</p>
+    </div>
+    
+    <div class="diff-grid">
+      <div class="diff-card">
+        <div class="diff-check">✓</div>
+        <h3>Real Work on Live Projects</h3>
+        <p>Not case studies. Not sandbox environments. Actual products used by real people.</p>
+      </div>
+      <div class="diff-card">
+        <div class="diff-check">✓</div>
+        <h3>Flexible Schedule</h3>
+        <p>2-3 hours a day. Work around your college. No attendance pressure.</p>
+      </div>
+      <div class="diff-card">
+        <div class="diff-check">✓</div>
+        <h3>Your Ideas Are Heard</h3>
+        <p>In a startup, everyone has a voice. You won't be invisible here.</p>
+      </div>
+      <div class="diff-card">
+        <div class="diff-check">✓</div>
+        <h3>A Community</h3>
+        <p>Build connections with fellow interns, mentors, and founders that last.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Apply CTA -->
+  <section class="apply-section" id="apply">
+    <div class="apply-content">
+      <h2>Ready to Start Your Story?</h2>
+      <p>Don't wait for the perfect moment. The perfect moment is the one where you decide to start. Slots are limited and we review on a rolling basis.</p>
+      
+      <div class="apply-buttons">
+        <a href="https://forms.gle/peMtBZrM9HHJpVCT8" target="_blank" class="apply-btn-primary">
+          Apply Now — 3 Minutes
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <a href="https://wa.me/918019736197" target="_blank" class="apply-btn-secondary">
+          WhatsApp Us
+        </a>
+      </div>
+      
+      <div class="contact-grid">
+        <div class="contact-item">
+          <div class="contact-item-label">Email</div>
+          <div class="contact-item-value">
+            <a href="mailto:projkeezgroup@gmail.com">projkeezgroup@gmail.com</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-label">WhatsApp</div>
+          <div class="contact-item-value">
+            <a href="https://wa.me/918019736197">80197 36197</a> / 
+            <a href="https://wa.me/919742853430">9742853430</a>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-label">Location</div>
+          <div class="contact-item-value">Bengaluru, India</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#roles">Roles</a>
+      <a href="https://projkeez.com" target="_blank">Website</a>
+      <a href="https://instagram.com/projkeezgroup" target="_blank">@projkeezgroup</a>
+    </div>
+    <p>© 2025 Projkeez Group Pvt Ltd. Building Innovation Beyond Boundaries.</p>
+  </footer>
+
+</div>
+
+<script>
+// ─── CURSOR ───
+const cursor = document.getElementById('cursor');
+const dot = document.getElementById('cursor-dot');
+let mx = 0, my = 0, cx = 0, cy = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px';
+  dot.style.top = my + 'px';
+});
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+function animCursor() {
+  cx = lerp(cx, mx, 0.12);
+  cy = lerp(cy, my, 0.12);
+  cursor.style.left = cx + 'px';
+  cursor.style.top = cy + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+document.querySelectorAll('a, button, .role-card, .benefit-card').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+});
+
+// ─── BACKGROUND CANVAS ───
+const bgCanvas = document.getElementById('bg-canvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [];
+
+function resizeBg() {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+}
+resizeBg();
+window.addEventListener('resize', resizeBg);
+
+for (let i = 0; i < 45; i++) {
+  particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 2 + 0.5,
+    dx: (Math.random() - 0.5) * 0.4,
+    dy: (Math.random() - 0.5) * 0.4,
+    opacity: Math.random() * 0.4 + 0.1
+  });
+}
+
+function drawBg() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  particles.forEach(p => {
+    p.x += p.dx; p.y += p.dy;
+    if (p.x < 0) p.x = bgCanvas.width;
+    if (p.x > bgCanvas.width) p.x = 0;
+    if (p.y < 0) p.y = bgCanvas.height;
+    if (p.y > bgCanvas.height) p.y = 0;
+    bgCtx.beginPath();
+    bgCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    bgCtx.fillStyle = `rgba(123,47,190,${p.opacity})`;
+    bgCtx.fill();
+  });
+
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 150) {
+        bgCtx.beginPath();
+        bgCtx.strokeStyle = `rgba(123,47,190,${0.06 * (1 - dist / 150)})`;
+        bgCtx.lineWidth = 0.5;
+        bgCtx.moveTo(particles[i].x, particles[i].y);
+        bgCtx.lineTo(particles[j].x, particles[j].y);
+        bgCtx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ─── NAV SCROLL EFFECT ───
+const nav = document.querySelector('.nav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 50) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+});
+
+// ─── SCROLL REVEAL ───
+const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.benefit-card, .role-card, .detail-box, .diff-card, .about-feature').forEach(el => {
+  el.classList.add('fade-up');
+  observer.observe(el);
+});
+
+// ─── SMOOTH SCROLL FOR NAV LINKS ───
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
